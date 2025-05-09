@@ -186,13 +186,31 @@ const PostList = ({
   loading,
   currentUserId,
 }: {
-  posts: Post[];
+  posts?: Post[]; // Make posts optional
   loading: boolean;
   currentUserId: string;
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const POSTS_PER_PAGE = 10;
   const router = useRouter();
+
+  // If loading, show spinner
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <Spinner size={40} className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // If posts is undefined or empty
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="text-center text-gray-600 mt-10">
+        No posts found. Be the first to post!
+      </div>
+    );
+  }
 
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
   const paginatedPosts = posts.slice(
@@ -221,22 +239,6 @@ const PostList = ({
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center mt-10">
-        <Spinner size={40} className="text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (posts.length === 0) {
-    return (
-      <div className="text-center text-gray-600 mt-10">
-        No posts found. Be the first to post!
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -328,5 +330,4 @@ const PostList = ({
     </div>
   );
 };
-
 export default PostList;
