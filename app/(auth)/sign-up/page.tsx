@@ -1,156 +1,10 @@
-// "use client";
-// import { betterAuthClient } from "@/lib/integrations/better-auth";
-// import { useRouter } from "next/navigation";
-// import React, { useState } from "react";
-
-// import Link from "next/link";
-
-
-// const SignUpPage = () => {
-//   const { data } = betterAuthClient.useSession();
-//   const router = useRouter();
-//   const [formData, setFormData] = useState({
-//     username: "",
-//     email: "",
-//     name: "",
-//     password: "",
-//   });
-//   const [isLoading, setIsLoading] = useState(false);
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       [e.target.name]: e.target.value,
-//     }));
-//   };
-  
-
-//   const handleSignUp = async () => {
-//     setIsLoading(true);
-//     try {
-//       const data = await betterAuthClient.getSession();
-//       console.log(data);
-
-//       const { error } = await betterAuthClient.signUp.email(
-//         {
-//           username: formData.username,
-//           email: formData.email,
-//           name: formData.name,
-//           password: formData.password,
-//         },
-//         {
-//           onRequest: () => {
-//             setIsLoading(true);
-//           },
-//           onSuccess: () => {
-//             setIsLoading(false);
-//             router.push("/"); // or wherever you want to redirect after signup
-//           },
-//           onError: (ctx) => {
-//             setIsLoading(false);
-//             alert(ctx.error.message || "Signup failed. Please try again.");
-//           },
-//         }
-//       );
-
-//       if (error) {
-//         alert(error.message || "Signup failed. Please try again.");
-//       }
-//     } catch {
-//       console.error("Signup error:");
-//       alert("An unexpected error occurred.");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   return (
-//     <>
-
-//       {!data?.user && (
-//         <div className="container mx-auto min-h-[calc(100vh-3rem)] flex items-center justify-center bg-[#F1F1DB]">
-//           <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-//             <h2 className="text-2xl font-bold text-center text-amber-900 mb-6">
-//               Create Account
-//             </h2>
-//             <div className="space-y-4">
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">
-//                   Username
-//                 </label>
-//                 <input
-//                   type="text"
-//                   name="username"
-//                   value={formData.username}
-//                   onChange={handleChange}
-//                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">
-//                   Email
-//                 </label>
-//                 <input
-//                   type="email"
-//                   name="email"
-//                   value={formData.email}
-//                   onChange={handleChange}
-//                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">
-//                   Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   name="name"
-//                   value={formData.name}
-//                   onChange={handleChange}
-//                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">
-//                   Password
-//                 </label>
-//                 <input
-//                   type="password"
-//                   name="password"
-//                   value={formData.password}
-//                   onChange={handleChange}
-//                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-//                 />
-//               </div>
-//               <button
-//                 onClick={handleSignUp}
-//                 disabled={isLoading}
-//                 className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors disabled:opacity-50"
-//               >
-//                 {isLoading ? "Creating account..." : "Sign Up"}
-//               </button>
-//               <div className="text-center text-sm mt-4">
-//                 Already have an account?{" "}
-//                 <Link href="/login" className="text-blue-600 hover:underline">
-//                   Log In
-//                 </Link>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-// export default SignUpPage;
-
-
-
 "use client";
 
 import { betterAuthClient } from "@/lib/integrations/better-auth";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Link from "next/link";
+import { z } from "zod"; // Import zod
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,6 +17,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+// Zod schema for validation with enhanced password rules
+const signUpSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  name: z.string().min(1, "Name is required"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+});
+
 const SignUpPage = () => {
   const { data } = betterAuthClient.useSession();
   const router = useRouter();
@@ -173,6 +41,7 @@ const SignUpPage = () => {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<any>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -183,6 +52,21 @@ const SignUpPage = () => {
 
   const handleSignUp = async () => {
     setIsLoading(true);
+
+    // Validate form data with Zod
+    const validation = signUpSchema.safeParse(formData);
+
+    if (!validation.success) {
+      // If validation fails, set errors state and stop the submission
+      const newErrors: any = {};
+      validation.error.errors.forEach((err) => {
+        newErrors[err.path[0]] = err.message;
+      });
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { error } = await betterAuthClient.signUp.email(
         {
@@ -232,7 +116,11 @@ const SignUpPage = () => {
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Enter your username"
+                  className={errors.username ? "border-red-500" : ""}
                 />
+                {errors.username && (
+                  <p className="text-red-500 text-sm">{errors.username}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
@@ -243,7 +131,11 @@ const SignUpPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
+                  className={errors.email ? "border-red-500" : ""}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="name">Name</Label>
@@ -253,7 +145,11 @@ const SignUpPage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your name"
+                  className={errors.name ? "border-red-500" : ""}
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
@@ -264,7 +160,11 @@ const SignUpPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
+                  className={errors.password ? "border-red-500" : ""}
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password}</p>
+                )}
               </div>
               <Button
                 onClick={handleSignUp}
