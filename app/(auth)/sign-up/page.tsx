@@ -31,7 +31,7 @@ const signUpSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
 });
 
-// Define the type of the form fields and errors
+// Define the type of the form fields
 interface FormData {
   username: string;
   email: string;
@@ -39,9 +39,12 @@ interface FormData {
   password: string;
 }
 
-// Allow errors to have dynamic keys corresponding to FormData fields
+// Define the type of errors in the form
 interface FormErrors {
-  [key: string]: string | undefined; // Allow any string key, but value must be a string or undefined
+  username?: string;
+  email?: string;
+  name?: string;
+  password?: string;
 }
 
 const SignUpPage = () => {
@@ -73,7 +76,10 @@ const SignUpPage = () => {
       // If validation fails, set errors state and stop the submission
       const newErrors: FormErrors = {};
       validation.error.errors.forEach((err) => {
-        newErrors[err.path[0]] = err.message;
+        const key = err.path[0]; // key will be a string such as 'username', 'email', etc.
+        if (key in newErrors) {
+          newErrors[key as keyof FormErrors] = err.message; // type assertion here
+        }
       });
       setErrors(newErrors);
       setIsLoading(false);
