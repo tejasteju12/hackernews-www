@@ -1,15 +1,11 @@
 "use client";
 
 import NavigationBar from "@/components/NavigationBar";
-import { useRouter } from "next/navigation";
 
 const NavigationWrapper = () => {
-  const router = useRouter();
-
   const handleSearch = (query: string) => {
-    // Replace with actual logic to navigate or search
     console.log("Search query:", query);
-    // router.push(`/search?q=${query}`); // Optional for routing
+    // You can use router.push(`/search?q=${query}`); here if needed
   };
 
   return <NavigationBar onSearch={handleSearch} />;
