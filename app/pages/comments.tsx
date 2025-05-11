@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -90,6 +88,9 @@ const Comments = ({ postId }: CommentsProps) => {
   };
 
   const handleDeleteComment = async (commentId: string) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this comment?");
+    if (!isConfirmed) return;
+
     try {
       const response = await fetch(`${serverUrl}/comments/${commentId}`, {
         method: "DELETE",
