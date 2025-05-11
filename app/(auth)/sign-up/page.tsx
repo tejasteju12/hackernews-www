@@ -31,17 +31,30 @@ const signUpSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
 });
 
+// Define the type of the form fields and errors
+interface FormData {
+  username: string;
+  email: string;
+  name: string;
+  password: string;
+}
+
+// Allow errors to have dynamic keys corresponding to FormData fields
+interface FormErrors {
+  [key: string]: string | undefined; // Allow any string key, but value must be a string or undefined
+}
+
 const SignUpPage = () => {
   const { data } = betterAuthClient.useSession();
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     name: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -58,7 +71,7 @@ const SignUpPage = () => {
 
     if (!validation.success) {
       // If validation fails, set errors state and stop the submission
-      const newErrors: any = {};
+      const newErrors: FormErrors = {};
       validation.error.errors.forEach((err) => {
         newErrors[err.path[0]] = err.message;
       });
