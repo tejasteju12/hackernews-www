@@ -27,7 +27,9 @@ const RootLayout = ({ children }: PropsWithChildren) => {
         >
          
           <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <NavigationBar />
+            <NavigationBar onSearch={function (query: string): void {
+              throw new Error("Function not implemented.");
+            } } />
             <main className="flex-1 p-4 pt-[4.5rem]">{children}</main>
           </div>
         </ThemeProvider>
