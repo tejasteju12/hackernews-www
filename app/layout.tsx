@@ -1,4 +1,3 @@
-
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { PropsWithChildren } from "react";
@@ -25,11 +24,8 @@ const RootLayout = ({ children }: PropsWithChildren) => {
           enableSystem
           disableTransitionOnChange
         >
-         
           <div className="min-h-screen flex flex-col bg-background text-foreground">
-            <NavigationBar onSearch={function (query: string): void {
-              throw new Error("Function not implemented.");
-            } } />
+            <NavigationBar onSearch={() => {}} />
             <main className="flex-1 p-4 pt-[4.5rem]">{children}</main>
           </div>
         </ThemeProvider>
