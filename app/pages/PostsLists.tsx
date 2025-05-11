@@ -32,7 +32,7 @@ const PostList = ({
   loading,
   currentUserId,
 }: {
-  posts?: Post[]; // Make posts optional
+  posts?: Post[];
   loading: boolean;
   currentUserId: string;
 }) => {
@@ -40,7 +40,6 @@ const PostList = ({
   const POSTS_PER_PAGE = 10;
   const router = useRouter();
 
-  // If loading, show spinner
   if (loading) {
     return (
       <div className="flex justify-center items-center mt-10">
@@ -49,10 +48,9 @@ const PostList = ({
     );
   }
 
-  // If posts is undefined or empty
   if (!posts || posts.length === 0) {
     return (
-      <div className="text-center text-gray-600 mt-10">
+      <div className="text-center text-gray-600 text-base mt-10">
         No posts found. Be the first to post!
       </div>
     );
@@ -74,7 +72,7 @@ const PostList = ({
         credentials: "include",
       });
       if (res.ok) {
-        window.location.reload(); // Reload page after deleting
+        window.location.reload();
       }
     } catch (err) {
       console.error("Error deleting post:", err);
@@ -94,22 +92,22 @@ const PostList = ({
       {paginatedPosts.map((post) => (
         <Card
           key={post.id}
-          className="bg-white dark:bg-zinc-900 text-black dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer"
+          className="bg-white dark:bg-zinc-900 text-gray-800 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer"
           onClick={() => router.push(`/posts/${post.id}`)}
         >
-          <CardContent className="p-6 space-y-3">
-            <div className="flex justify-between">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex justify-between items-start">
               <div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/posts/${post.id}`);
                   }}
-                  className="text-xl font-semibold text-primary hover:underline focus:outline-none"
+                  className="text-2xl font-bold text-blue-700 hover:underline focus:outline-none"
                 >
                   {post.title}
                 </button>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 mt-1">
                   Posted on{" "}
                   {new Date(post.createdAt).toLocaleString("en-IN", {
                     day: "2-digit",
@@ -128,14 +126,14 @@ const PostList = ({
                   size="icon"
                   onClick={(e) => {
                     e.stopPropagation();
-                    deletePost(post.id); // Ask for confirmation before deleting
+                    deletePost(post.id);
                   }}
                 >
                   <Trash2 className="w-5 h-5 text-destructive" />
                 </Button>
               )}
             </div>
-            <p className="text-sm leading-relaxed dark:text-zinc-300">
+            <p className="text-base leading-relaxed text-gray-800 dark:text-zinc-300">
               {post.content}
             </p>
             <div
