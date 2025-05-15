@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata = {
   title: "Hacker News",
-  description: "Built by Kethan",
+  description: "Built by S Teja",
 };
 
 const RootLayout = ({ children }: PropsWithChildren) => {
